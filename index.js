@@ -10,19 +10,12 @@ const urls = [
     {
         name: 'Zuka',
         url: 'http://rov.wikia.com/wiki/Zuka'
-    },
-    {
-        name: 'BondHome',
-        url: 'https://www.kasemsanm.com/'
-    }  
-    
+    }    
 ]
-let i = 0
-
 const queue = async.queue((task,callback) =>{
     request(task.url,(error,response,body) =>{
         $ = cheerio.load(body)
-        const text = $('p').text()
+        const text = $('#mw-content-text p').text()
         fs.writeFile(task.name+'.txt',text,(err) => {
             if(err){
                 console.log(err)
@@ -32,6 +25,14 @@ const queue = async.queue((task,callback) =>{
             callback()
         })
     })
+},1)
+
+queue.drain = () =>{
+    console.log('all process complete')
+}
+
+queue.push(urls)
+
 
 
 
@@ -48,10 +49,3 @@ const queue = async.queue((task,callback) =>{
         })
     })
     */
-},1)
-
-queue.drain = () =>{
-    console.log('all process complete')
-}
-
-queue.push(urls)
